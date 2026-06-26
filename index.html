@@ -172,7 +172,32 @@
   /* gate footer note */
   .gate-foot{position:relative;z-index:3;text-align:center;padding:14px 24px 90px;font-size:11.5px;color:#2a2e4a;flex-shrink:0;}
 
-  /* ===== Welcome / stats ===== */
+  /* ===== Announcement Banner ===== */
+  .announce-bar{
+    position:relative;z-index:6;
+    background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(91,141,239,0.12));
+    border:1px solid rgba(212,175,55,0.35);border-radius:14px;
+    padding:13px 16px 13px 44px;margin-bottom:18px;
+    display:flex;align-items:center;gap:12px;
+    animation:slideDown .4s ease;
+    box-shadow:0 4px 18px rgba(0,0,0,0.25);
+  }
+  @keyframes slideDown{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeOut{from{opacity:1;transform:translateY(0);}to{opacity:0;transform:translateY(-8px);}}
+  .announce-bar .a-badge{
+    flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;
+    padding:4px 10px;border-radius:999px;background:rgba(212,175,55,0.2);
+    border:1px solid rgba(212,175,55,0.4);color:var(--gold-light);font-size:11px;font-weight:800;white-space:nowrap;
+  }
+  .announce-bar .a-text{flex:1;font-size:13px;color:var(--text-soft);line-height:1.5;}
+  .announce-bar .a-text b{color:var(--gold-light);}
+  .announce-bar .a-date{flex:0 0 auto;font-size:11px;color:var(--text-dim);white-space:nowrap;}
+  .announce-bar .a-close{
+    position:absolute;left:12px;top:50%;transform:translateY(-50%);
+    background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:16px;line-height:1;padding:2px;
+    transition:color .15s;
+  }
+  .announce-bar .a-close:hover{color:var(--gold-light);}
   .welcome{text-align:center;margin-bottom:18px;}
   .welcome h2{font-family:'Cinzel Decorative',serif;color:var(--gold-light);font-size:clamp(18px,4vw,23px);margin:0 0 6px;text-shadow:0 0 14px var(--gold-soft);}
   .welcome p{color:var(--text-dim);font-size:13.5px;margin:0;}
@@ -479,7 +504,7 @@
   <header class="topbar">
     <div class="brand-title">
       <span class="en">MATH&nbsp;PLATFORM</span>
-      <span class="sub">منصة الرياضيات &middot; الصف الرابع الابتدائي</span>
+      <span class="sub">منصة الـ MATH &middot; الصف الرابع الابتدائي</span>
     </div>
     <div class="student-chip" id="studentChip" style="display:none;">
       <span class="avatar" id="studentAvatar"></span>
@@ -532,6 +557,7 @@
 
   <!-- UNITS -->
   <section id="screen-units" class="screen">
+    <div id="announceBar"></div>
     <div class="welcome">
       <h2>اختر الوحدة <span class="en">(UNIT)</span> التي تريد مذاكرتها</h2>
       <p>8 وحدات دراسية كاملة — اضغط على أي وحدة لعرض الدروس</p>
@@ -567,8 +593,16 @@
 
 <script>
 /* =========================================================
-   ICONS (inline SVG, currentColor based)
+   ★ ANNOUNCEMENT — غيّر النص هنا كل ما عندك جديد
+   اضبط active: false لو مش عايز يظهر
 ========================================================= */
+const ANNOUNCEMENT = {
+  active: true,
+  date: 'يونيو 2025',
+  text: '🎉 <b>تم إضافة كل دروس الوحدة الأولى (Unit 1 — Place Value)</b> بالكامل — فيديوهات شرح وملفات PDF وكويزات لكل درس!'
+};
+
+
 const ICN = {
   play:  `<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>`,
   playBig: `<svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg>`,
@@ -616,7 +650,9 @@ const CURRICULUM = [
       { id:'u1c2l3', num:'Lesson 8', en:'Rounding Rules', ar:'قواعد التقريب' },
     ]},
   ]},
-  { id:2, accent:'var(--c2)', enTitle:'Addition and Subtraction', arTitle:'الجمع والطرح', concepts:[
+  { id:2, accent:'var(--c2)', enTitle:'Addition and Subtraction', arTitle:'الجمع والطرح',
+    finalQuiz:{ url:'https://nadeim80-cmyk.github.io/math4lunit2QUIZ/', desc:'كويز شامل على كل دروس الوحدة الثانية — يفضّل حله بعد مراجعة كل الدروس' },
+    concepts:[
     { title:'المفهوم 1 · Using Addition and Subtraction Strategies', lessons:[
       { id:'u2c1l1', num:'Lesson 1', en:'Properties of Addition', ar:'خصائص الجمع' },
       { id:'u2c1l2', num:'Lesson 2', en:'Addition with Regrouping', ar:'الجمع مع إعادة التجميع' },
@@ -733,7 +769,12 @@ const LESSON_CONTENT = {
     ],
     fileUrl:'https://nadeim80-cmyk.github.io/math4lunit1esson8/',
     tip:'شاهد الشرح والاستراتيجية، ثم افتح ملف الكويز للتأكد من الفهم.'
-  }
+  },
+  'u2c1l1': { videos:[], fileUrl:'https://nadeim80-cmyk.github.io/math4lunit2lesson1/', tip:'افتح ملف الشرح وحل الكويز بعد المراجعة.' },
+  'u2c1l2': { videos:[], fileUrl:'https://nadeim80-cmyk.github.io/math4lunit2lesson2/', tip:'افتح ملف الشرح وحل الكويز بعد المراجعة.' },
+  'u2c1l3': { videos:[], fileUrl:'https://nadeim80-cmyk.github.io/math4lunit2lesson3/', tip:'افتح ملف الشرح وحل الكويز بعد المراجعة.' },
+  'u2c2l1': { videos:[], fileUrl:'https://nadeim80-cmyk.github.io/math4lunit2lesson4/', tip:'افتح ملف الشرح وحل الكويز بعد المراجعة.' },
+  'u2c2l2': { videos:[], fileUrl:'https://nadeim80-cmyk.github.io/math4lunit2lesson5/', tip:'افتح ملف الشرح وحل الكويز بعد المراجعة.' }
 };
 
 /* =========================================================
@@ -802,7 +843,24 @@ function setCrumb(items){
 }
 
 /* ----- Units screen ----- */
+function dismissAnnounce(){
+  const el = document.getElementById('announceBar');
+  if(el){ el.style.animation='fadeOut .3s ease forwards'; setTimeout(()=>el.innerHTML='', 300); }
+}
+
 function renderUnits(){
+  // Announcement
+  const ab = document.getElementById('announceBar');
+  if(ANNOUNCEMENT.active && ab && !ab.dataset.dismissed){
+    ab.innerHTML = `
+      <div class="announce-bar">
+        <span class="a-badge">🔔 جديد</span>
+        <span class="a-text">${ANNOUNCEMENT.text}</span>
+        <span class="a-date">${ANNOUNCEMENT.date}</span>
+        <button class="a-close" onclick="dismissAnnounce()" title="إغلاق">✕</button>
+      </div>`;
+    ab.dataset.dismissed = '0';
+  }
   const all = overallStats();
   document.getElementById('statsStrip').innerHTML = `
     <span class="stat-pill">${iconHtml('quiz')} <b>${all.ready}</b>&nbsp;من&nbsp;<b>${all.total}</b> درس متاح</span>
@@ -950,21 +1008,25 @@ function openLesson(lessonId){
   const [acc1,acc2] = accentMap[accent]||['#f3d877','#9c7a26'];
 
   // ---- TAB 1: Videos (Style 2 — horizontal rows with accent color thumbnail) ----
-  t1 = `<div class="vs2-list">` + content.videos.map((v,i)=>{
-    const vid = extractYTId(v.url);
-    return `<a class="vs2-row" href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener"
-      style="--vthumb-c1:${acc1}22;--vthumb-c2:${acc2}44;--acc1:${acc1};">
-      <div class="vs2-thumb" style="background:linear-gradient(135deg,${acc1}55,${acc2}88);">
-        <img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" alt="${v.en}" loading="lazy">
-        <div class="vs2-play"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg></div>
-      </div>
-      <div class="vs2-body">
-        <span class="vnum" style="background:${acc1}22;color:${acc1};border-color:${acc1}44;">فيديو ${i+1}</span>
-        <span class="vtxt">${v.en}</span>
-        <span class="vgo"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 6.5 9.3 12l5.7 5.5"/></svg></span>
-      </div>
-    </a>`;
-  }).join('') + `</div>`;
+  if(content.videos && content.videos.length > 0){
+    t1 = `<div class="vs2-list">` + content.videos.map((v,i)=>{
+      const vid = extractYTId(v.url);
+      return `<a class="vs2-row" href="https://www.youtube.com/watch?v=${vid}" target="_blank" rel="noopener"
+        style="--vthumb-c1:${acc1}22;--vthumb-c2:${acc2}44;--acc1:${acc1};">
+        <div class="vs2-thumb" style="background:linear-gradient(135deg,${acc1}55,${acc2}88);">
+          <img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" alt="${v.en}" loading="lazy">
+          <div class="vs2-play"><svg viewBox="0 0 24 24" width="28" height="28" fill="currentColor"><path d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14Z"/></svg></div>
+        </div>
+        <div class="vs2-body">
+          <span class="vnum" style="background:${acc1}22;color:${acc1};border-color:${acc1}44;">فيديو ${i+1}</span>
+          <span class="vtxt">${v.en}</span>
+          <span class="vgo"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M15 6.5 9.3 12l5.7 5.5"/></svg></span>
+        </div>
+      </a>`;
+    }).join('') + `</div>`;
+  } else {
+    t1 = `<div class="soon-box"><div class="icon">${ICN.tools}</div><h3>فيديوهات الشرح قيد الإعداد</h3><p>هيتم إضافة فيديوهات شرح هذا الدرس قريبًا، تابع معنا!</p><a class="btn-solid" href="${waLink('السلام عليكم، أريد الاستفسار عن موعد إضافة فيديوهات درس: '+meta.lesson.en)}" target="_blank" rel="noopener">${iconHtml('chat')} اسأل على واتساب</a></div>`;
+  }
 
   if(content.tip) t1 += `<div class="tip-box">${iconHtml('bulb')}<span>${content.tip}</span></div>`;
 
